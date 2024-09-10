@@ -1,0 +1,46 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+env/
+.env
+
+# IDE or editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# SQLite database
+*.sqlite3
+*.db
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage reports
+.coverage
+coverage.xml
+*.cover
+
+# Docker
+docker-compose.override.yml
+docker-compose.local.yml
+
+# FastAPI specific
+*.pydantic
+
+# Secrets and credentials
+secrets/
+.DS_Store
+.DS_Store
