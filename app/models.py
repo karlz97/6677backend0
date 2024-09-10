@@ -25,7 +25,7 @@ class Tag(BaseModel):
 
 class UserInteraction(BaseModel):
     user_id: str
-    audio_id: int
+    src_id: str  # Changed from audio_id to src_id
     is_fav: bool
     viewed: bool
     finished: bool
@@ -33,3 +33,4 @@ class UserInteraction(BaseModel):
     listened_percentage: float
     bookmarks: List[str]  # Added bookmarks
     comments: List[str]  # Added comments
+    recommended: bool  # Added recommended field

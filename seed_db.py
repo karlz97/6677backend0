@@ -2,7 +2,7 @@ import csv
 import os
 import sqlite3
 from app.database import get_db, init_db
-from app.models import AudioMetadata, Creator, Tag
+from app.models import AudioMetadata, Creator, Tag, UserInteraction
 
 DATA_INPUT_DIR = "data.input"
 ADDED_FILES_LOG = DATA_INPUT_DIR + "/added_files.log"
@@ -83,6 +83,27 @@ def process_csv_file(file_path):
 
         conn.commit()
         conn.close()
+
+
+# def seed_user_interactions():
+#     db = get_db()
+#     user_interactions = [
+#         UserInteraction(
+#             user_id="user1",
+#             src_id="audio1",  # Changed from audio_id to src_id
+#             is_fav=True,
+#             viewed=True,
+#             finished=False,
+#             listened_second=300,
+#             listened_percentage=0.5,
+#             bookmarks=["1:30", "5:45"],
+#             comments=["Great audio!"],
+#             recommended=True,
+#         ),
+#         # ... more user interactions ...
+#     ]
+#     db.add_all(user_interactions)
+#     db.commit()
 
 
 if __name__ == "__main__":

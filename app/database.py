@@ -90,14 +90,15 @@ def init_db():
         """
         CREATE TABLE IF NOT EXISTS user_interactions (
             user_id TEXT,
-            audio_id INTEGER,
+            src_id TEXT,
             is_fav BOOLEAN,
             viewed BOOLEAN,
             finished BOOLEAN,
             listened_second INTEGER,
             listened_percentage REAL,
-            PRIMARY KEY (user_id, audio_id),
-            FOREIGN KEY (audio_id) REFERENCES audio_metadata (id)
+            recommended BOOLEAN,  
+            PRIMARY KEY (user_id, src_id),
+            FOREIGN KEY (src_id) REFERENCES audio_metadata (src_id)
         )
     """
     )
