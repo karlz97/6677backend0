@@ -40,15 +40,15 @@ def process_csv_file(file_path):
             # Insert audio metadata
             cur.execute(
                 "INSERT OR REPLACE INTO audio_metadata (src_id, description, audio_src, location) VALUES (?, ?, ?, ?)",
-                (row["Video_id"], row["Title"], row["Audio_url"], row["Location"]),
+                (row["Source_id"], row["Title"], row["Audio_url"], row["Location"]),
             )
-            audio_id = cur.lastrowid
+            src_id = row["Source_id"]
 
             # Insert images
             for image_url in row["Image_url"].split(","):
                 cur.execute(
-                    "INSERT INTO images (audio_id, image_url) VALUES (?, ?)",
-                    (audio_id, image_url.strip()),
+                    "INSERT INTO images (src_id, image_url) VALUES (?, ?)",
+                    (src_id, image_url.strip()),
                 )
 
             # Insert creators
@@ -64,8 +64,8 @@ def process_csv_file(file_path):
                 )
                 creator_db_id = cur.fetchone()[0]
                 cur.execute(
-                    "INSERT OR IGNORE INTO audio_creators (audio_id, creator_id) VALUES (?, ?)",
-                    (audio_id, creator_db_id),
+                    "INSERT OR IGNORE INTO audio_creators (src_id, creator_id) VALUES (?, ?)",
+                    (src_id, creator_db_id),
                 )
 
             # Insert tags
@@ -77,8 +77,8 @@ def process_csv_file(file_path):
                 cur.execute("SELECT id FROM tags WHERE name = ?", (tag.strip(),))
                 tag_id = cur.fetchone()[0]
                 cur.execute(
-                    "INSERT OR IGNORE INTO audio_tags (audio_id, tag_id) VALUES (?, ?)",
-                    (audio_id, tag_id),
+                    "INSERT OR IGNORE INTO audio_tags (src_id, tag_id) VALUES (?, ?)",
+                    (src_id, tag_id),
                 )
 
         conn.commit()

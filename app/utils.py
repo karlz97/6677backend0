@@ -32,47 +32,56 @@ def update_user_interactions(cur, user_id: str, src_ids: List[str]):
             )
 
 
-def recommend_random(cur, user_id: str, limit: int) -> List[str]:
-    cur.execute(
-        """
+def recommend_random(
+    cur, user_id: str, limit: int, no_recommended: bool = False
+) -> List[str]:
+    query = """
         SELECT am.src_id FROM audio_metadata am
-        WHERE am.src_id NOT IN (
-            SELECT ui.src_id FROM user_interactions ui
-            WHERE ui.user_id = ? AND ui.viewed = 1
-        )
+        LEFT JOIN user_interactions ui ON am.src_id = ui.src_id AND ui.user_id = ?
+        WHERE ui.viewed IS NULL OR ui.viewed = 0
+    """
+
+    if no_recommended:
+        query += " AND (ui.recommended IS NULL OR ui.recommended = 0)"
+
+    query += """
         ORDER BY RANDOM()
         LIMIT ?
-    """,
-        (user_id, limit),
-    )
+    """
+
+    cur.execute(query, (user_id, limit))
     return [row["src_id"] for row in cur.fetchall()]
 
 
-def recommend_by_tags(cur, user_id: str, tags: List[str], limit: int) -> List[str]:
+def recommend_by_tags(
+    cur, user_id: str, tags: List[str], limit: int, no_recommended: bool = False
+) -> List[str]:
     placeholders = ",".join(["?" for _ in tags])
-    cur.execute(
-        f"""
+    query = f"""
         SELECT am.src_id, COUNT(DISTINCT t.id) as tag_count
         FROM audio_metadata am
         JOIN audio_tags at ON am.id = at.audio_id
         JOIN tags t ON at.tag_id = t.id
+        LEFT JOIN user_interactions ui ON am.src_id = ui.src_id AND ui.user_id = ?
         WHERE t.name IN ({placeholders})
-        AND am.src_id NOT IN (
-            SELECT ui.src_id FROM user_interactions ui
-            WHERE ui.user_id = ? AND ui.viewed = 1
-        )
+        AND (ui.viewed IS NULL OR ui.viewed = 0)
+    """
+
+    if no_recommended:
+        query += " AND (ui.recommended IS NULL OR ui.recommended = 0)"
+
+    query += """
         GROUP BY am.id
         ORDER BY tag_count DESC, RANDOM() 
         LIMIT ?
-    """,
-        (*tags, user_id, limit),
-    )
+    """
 
+    cur.execute(query, (user_id, *tags, limit))
     recommended = [row["src_id"] for row in cur.fetchall()]
 
     if len(recommended) < limit:
         additional = limit - len(recommended)
-        random_recs = recommend_random(cur, user_id, additional)
+        random_recs = recommend_random(cur, user_id, additional, no_recommended)
         recommended.extend(random_recs)
 
     return recommended[:limit]
@@ -85,13 +94,13 @@ def fetch_audio_meta(cur, src_id: str):
                GROUP_CONCAT(DISTINCT c.creator_id) as creators,
                GROUP_CONCAT(DISTINCT t.name) as tags
         FROM audio_metadata am
-        LEFT JOIN images i ON am.id = i.audio_id
-        LEFT JOIN audio_creators ac ON am.id = ac.audio_id
+        LEFT JOIN images i ON am.src_id = i.src_id
+        LEFT JOIN audio_creators ac ON am.src_id = ac.src_id
         LEFT JOIN creators c ON ac.creator_id = c.id
-        LEFT JOIN audio_tags at ON am.id = at.audio_id
+        LEFT JOIN audio_tags at ON am.src_id = at.src_id
         LEFT JOIN tags t ON at.tag_id = t.id
         WHERE am.src_id = ?
-        GROUP BY am.id
+        GROUP BY am.src_id
     """,
         (src_id,),
     )

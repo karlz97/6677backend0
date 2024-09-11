@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from app.models import AudioMetadata, UserInteraction
 from app.database import get_db
 from typing import List
@@ -13,14 +13,25 @@ router = APIRouter()
 
 
 @router.get("/recommend/{user_id}")
-def get_recommend(user_id: str, tags: List[str] = None, limit: int = 5):
+def get_recommend(
+    user_id: str,
+    tags: List[str] = Query(None),
+    limit: int = 5,
+    no_recommended: bool = False,
+):
     conn = get_db()
     cur = conn.cursor()
 
     if tags:
-        recommended = recommend_by_tags(cur, user_id, tags, limit)
+        recommended = recommend_by_tags(cur, user_id, tags, limit, no_recommended)
     else:
-        recommended = recommend_random(cur, user_id, limit)
+        recommended = recommend_random(cur, user_id, limit, no_recommended)
+
+    if not recommended:
+        conn.close()
+        raise HTTPException(
+            status_code=404, detail="No applicable audio content available"
+        )
 
     # Add UserInteraction entries for recommended audios
     update_user_interactions(cur, user_id, recommended)
@@ -31,14 +42,27 @@ def get_recommend(user_id: str, tags: List[str] = None, limit: int = 5):
 
 
 @router.get("/recommend-full/{user_id}")
-def get_recommend_full(user_id: str, tags: List[str] = None, limit: int = 5):
+def get_recommend_full(
+    user_id: str,
+    tags: List[str] = Query(None),
+    limit: int = 5,
+    no_recommended: bool = False,
+):
     conn = get_db()
     cur = conn.cursor()
 
     if tags:
-        recommended_src_ids = recommend_by_tags(cur, user_id, tags, limit)
+        recommended_src_ids = recommend_by_tags(
+            cur, user_id, tags, limit, no_recommended
+        )
     else:
-        recommended_src_ids = recommend_random(cur, user_id, limit)
+        recommended_src_ids = recommend_random(cur, user_id, limit, no_recommended)
+
+    if not recommended_src_ids:
+        conn.close()
+        raise HTTPException(
+            status_code=404, detail="No applicable audio content available"
+        )
 
     recommended_full = []
     for src_id in recommended_src_ids:
@@ -51,7 +75,7 @@ def get_recommend_full(user_id: str, tags: List[str] = None, limit: int = 5):
 
     conn.commit()
     conn.close()
-    return {"recommended": recommended_full}
+    return recommended_full
 
 
 @router.post("/user-interaction")

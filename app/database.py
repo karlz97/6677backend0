@@ -52,9 +52,9 @@ def init_db():
         """
         CREATE TABLE IF NOT EXISTS images (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            audio_id INTEGER,
+            src_id TEXT,
             image_url TEXT,
-            FOREIGN KEY (audio_id) REFERENCES audio_metadata (id)
+            FOREIGN KEY (src_id) REFERENCES audio_metadata (src_id)
         )
     """
     )
@@ -63,10 +63,10 @@ def init_db():
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS audio_creators (
-            audio_id INTEGER,
+            src_id TEXT,
             creator_id INTEGER,
-            PRIMARY KEY (audio_id, creator_id),
-            FOREIGN KEY (audio_id) REFERENCES audio_metadata (id),
+            PRIMARY KEY (src_id, creator_id),
+            FOREIGN KEY (src_id) REFERENCES audio_metadata (src_id),
             FOREIGN KEY (creator_id) REFERENCES creators (id)
         )
     """
@@ -76,10 +76,10 @@ def init_db():
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS audio_tags (
-            audio_id INTEGER,
+            src_id TEXT,
             tag_id INTEGER,
-            PRIMARY KEY (audio_id, tag_id),
-            FOREIGN KEY (audio_id) REFERENCES audio_metadata (id),
+            PRIMARY KEY (src_id, tag_id),
+            FOREIGN KEY (src_id) REFERENCES audio_metadata (src_id),
             FOREIGN KEY (tag_id) REFERENCES tags (id)
         )
     """
@@ -108,10 +108,10 @@ def init_db():
         """
         CREATE TABLE IF NOT EXISTS bookmarks (
             user_id TEXT,
-            audio_id INTEGER,
+            src_id TEXT,
             bookmark TEXT,
-            PRIMARY KEY (user_id, audio_id, bookmark),
-            FOREIGN KEY (user_id, audio_id) REFERENCES user_interactions (user_id, audio_id)
+            PRIMARY KEY (user_id, src_id, bookmark),
+            FOREIGN KEY (user_id, src_id) REFERENCES user_interactions (user_id, src_id)
         )
     """
     )
@@ -121,10 +121,10 @@ def init_db():
         """
         CREATE TABLE IF NOT EXISTS comments (
             user_id TEXT,
-            audio_id INTEGER,
+            src_id TEXT,
             comment TEXT,
-            PRIMARY KEY (user_id, audio_id, comment),
-            FOREIGN KEY (user_id, audio_id) REFERENCES user_interactions (user_id, audio_id)
+            PRIMARY KEY (user_id, src_id, comment),
+            FOREIGN KEY (user_id, src_id) REFERENCES user_interactions (user_id, src_id)
         )
     """
     )
