@@ -1,4 +1,4 @@
-# My FastAPI Project
+# 6677 Shortcast project backend MVP
 
 ## Setup
 
