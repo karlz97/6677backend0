@@ -102,12 +102,9 @@ def fetch_audio_meta(cur, src_id: str):
     cur.execute(
         """
         SELECT am.*, GROUP_CONCAT(DISTINCT i.image_url) as images, 
-               GROUP_CONCAT(DISTINCT c.creator_id) as creators,
                GROUP_CONCAT(DISTINCT t.name) as tags
         FROM audio_metadata am
         LEFT JOIN images i ON am.src_id = i.src_id
-        LEFT JOIN audio_creators ac ON am.src_id = ac.src_id
-        LEFT JOIN creators c ON ac.creator_id = c.id
         LEFT JOIN audio_tags at ON am.src_id = at.src_id
         LEFT JOIN tags t ON at.tag_id = t.id
         WHERE am.src_id = ?
@@ -120,9 +117,6 @@ def fetch_audio_meta(cur, src_id: str):
         audio_meta = dict(result)
         audio_meta["images"] = (
             audio_meta["images"].split(",") if audio_meta["images"] else []
-        )
-        audio_meta["creators"] = (
-            audio_meta["creators"].split(",") if audio_meta["creators"] else []
         )
         audio_meta["tags"] = audio_meta["tags"].split(",") if audio_meta["tags"] else []
         return audio_meta

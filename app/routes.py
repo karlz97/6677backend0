@@ -181,10 +181,16 @@ def add_audio_meta(audio: AudioMetadata):
     # Insert audio metadata
     cur.execute(
         """
-        INSERT OR REPLACE INTO audio_metadata (src_id, description, audio_src, location)
-        VALUES (?, ?, ?, ?)
+        INSERT OR REPLACE INTO audio_metadata (src_id, description, audio_src, location, creator)
+        VALUES (?, ?, ?, ?, ?)
     """,
-        (audio.src_id, audio.description, audio.audio_src, audio.location),
+        (
+            audio.src_id,
+            audio.description,
+            audio.audio_src,
+            audio.location,
+            audio.creator,
+        ),
     )
     audio_id = cur.lastrowid
 
@@ -193,18 +199,6 @@ def add_audio_meta(audio: AudioMetadata):
         cur.execute(
             "INSERT INTO images (audio_id, image_url) VALUES (?, ?)",
             (audio_id, image_url),
-        )
-
-    # Insert creators
-    for creator_id in audio.creators:
-        cur.execute(
-            "INSERT OR IGNORE INTO creators (creator_id) VALUES (?)", (creator_id,)
-        )
-        cur.execute("SELECT id FROM creators WHERE creator_id = ?", (creator_id,))
-        creator_db_id = cur.fetchone()[0]
-        cur.execute(
-            "INSERT OR IGNORE INTO audio_creators (audio_id, creator_id) VALUES (?, ?)",
-            (audio_id, creator_db_id),
         )
 
     # Insert tags

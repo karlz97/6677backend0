@@ -22,9 +22,10 @@ def init_db():
             src_id TEXT UNIQUE NOT NULL,
             description TEXT,
             audio_src TEXT,
-            location TEXT
+            location TEXT,
+            creator TEXT
         )
-    """
+        """
     )
 
     # Creators table
@@ -34,7 +35,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             creator_id TEXT UNIQUE NOT NULL
         )
-    """
+        """
     )
 
     # Tags table
@@ -44,7 +45,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT UNIQUE NOT NULL
         )
-    """
+        """
     )
 
     # Images table
@@ -56,20 +57,7 @@ def init_db():
             image_url TEXT,
             FOREIGN KEY (src_id) REFERENCES audio_metadata (src_id)
         )
-    """
-    )
-
-    # Audio-Creator relationship table
-    cur.execute(
         """
-        CREATE TABLE IF NOT EXISTS audio_creators (
-            src_id TEXT,
-            creator_id INTEGER,
-            PRIMARY KEY (src_id, creator_id),
-            FOREIGN KEY (src_id) REFERENCES audio_metadata (src_id),
-            FOREIGN KEY (creator_id) REFERENCES creators (id)
-        )
-    """
     )
 
     # Audio-Tag relationship table
@@ -82,7 +70,7 @@ def init_db():
             FOREIGN KEY (src_id) REFERENCES audio_metadata (src_id),
             FOREIGN KEY (tag_id) REFERENCES tags (id)
         )
-    """
+        """
     )
 
     # Updated User interactions table
@@ -100,7 +88,7 @@ def init_db():
             PRIMARY KEY (user_id, src_id),
             FOREIGN KEY (src_id) REFERENCES audio_metadata (src_id)
         )
-    """
+        """
     )
 
     # New table for bookmarks
@@ -113,7 +101,7 @@ def init_db():
             PRIMARY KEY (user_id, src_id, bookmark),
             FOREIGN KEY (user_id, src_id) REFERENCES user_interactions (user_id, src_id)
         )
-    """
+        """
     )
 
     # New table for comments
@@ -126,7 +114,7 @@ def init_db():
             PRIMARY KEY (user_id, src_id, comment),
             FOREIGN KEY (user_id, src_id) REFERENCES user_interactions (user_id, src_id)
         )
-    """
+        """
     )
 
     conn.commit()

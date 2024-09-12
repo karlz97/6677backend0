@@ -9,7 +9,7 @@ class AudioMetadata(BaseModel):
     audio_src: str
     location: str
     images: List[str]
-    creators: List[str]
+    creator: str  # Changed from List[str] to str
     tags: List[str]
 
 
