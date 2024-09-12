@@ -85,27 +85,23 @@ def process_csv_file(file_path):
         conn.close()
 
 
-# def seed_user_interactions():
-#     db = get_db()
-#     user_interactions = [
-#         UserInteraction(
-#             user_id="user1",
-#             src_id="audio1",  # Changed from audio_id to src_id
-#             is_fav=True,
-#             viewed=True,
-#             finished=False,
-#             listened_second=300,
-#             listened_percentage=0.5,
-#             bookmarks=["1:30", "5:45"],
-#             comments=["Great audio!"],
-#             recommended=True,
-#         ),
-#         # ... more user interactions ...
-#     ]
-#     db.add_all(user_interactions)
-#     db.commit()
+import sys
+import os
+
+
+def reset_db():
+    if os.path.exists("audio_app.db"):
+        os.remove("audio_app.db")
+        print("Database deleted.")
+    if os.path.exists("data.input/added_files.log"):
+        os.remove("data.input/added_files.log")
+        print("Log file deleted.")
 
 
 if __name__ == "__main__":
+    if "--reset" in sys.argv or "-R" in sys.argv:
+        # Reset database and delete added_files.log
+        reset_db()
+        print("Database and log file reset.")
     init_db()
     process_csv_files()

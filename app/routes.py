@@ -3,10 +3,11 @@ from app.models import AudioMetadata, UserInteraction
 from app.database import get_db
 from typing import List
 from app.utils import (
-    update_user_interactions,
+    post_recommend_state_update,
     recommend_random,
     recommend_by_tags,
     fetch_audio_meta,
+    no_recommended_state_update,
 )
 
 router = APIRouter()
@@ -28,13 +29,11 @@ def get_recommend(
         recommended = recommend_random(cur, user_id, limit, no_recommended)
 
     if not recommended:
+        no_recommended_state_update(cur, user_id)
         conn.close()
-        raise HTTPException(
-            status_code=404, detail="No applicable audio content available"
-        )
 
     # Add UserInteraction entries for recommended audios
-    update_user_interactions(cur, user_id, recommended)
+    post_recommend_state_update(cur, user_id, recommended)
 
     conn.commit()
     conn.close()
@@ -59,10 +58,8 @@ def get_recommend_full(
         recommended_src_ids = recommend_random(cur, user_id, limit, no_recommended)
 
     if not recommended_src_ids:
+        no_recommended_state_update(cur, user_id)
         conn.close()
-        raise HTTPException(
-            status_code=404, detail="No applicable audio content available"
-        )
 
     recommended_full = []
     for src_id in recommended_src_ids:
@@ -71,7 +68,7 @@ def get_recommend_full(
             recommended_full.append(audio_meta)
 
     # Add UserInteraction entries for recommended audios
-    update_user_interactions(cur, user_id, recommended_src_ids)
+    post_recommend_state_update(cur, user_id, recommended_src_ids)
 
     conn.commit()
     conn.close()

@@ -1,8 +1,9 @@
 from typing import List
 from app.models import AudioMetadata
+from fastapi import HTTPException
 
 
-def update_user_interactions(cur, user_id: str, src_ids: List[str]):
+def post_recommend_state_update(cur, user_id: str, src_ids: List[str]):
     for src_id in src_ids:
         cur.execute(
             """
@@ -30,6 +31,16 @@ def update_user_interactions(cur, user_id: str, src_ids: List[str]):
                 """,
                 (user_id, src_id, False, False, False, 0, 0.0, True),
             )
+
+
+def no_recommended_state_update(
+    cur,
+    user_id: str,
+):
+    raise HTTPException(
+        status_code=204,
+        detail="Sorry, we have no applicable audio content available for you",
+    )
 
 
 def recommend_random(
