@@ -18,7 +18,7 @@ def get_recommend(
     user_id: str,
     tags: List[str] = Query(None),
     limit: int = 5,
-    no_recommended: bool = False,
+    no_recommended: bool = False,  # TODO 这里的名字有歧义，这个参数指的是根据viewed还是recommended数据来filter接下来推荐的内容
 ):
     conn = get_db()
     cur = conn.cursor()
@@ -215,8 +215,8 @@ def add_audio_meta(audio: AudioMetadata):
     return {"status": "success"}
 
 
-@router.post("/clean-database")
-def clean_database():
+@router.post("/reset-database")
+def reset_database():
     conn = get_db()
     cur = conn.cursor()
 
@@ -229,6 +229,25 @@ def clean_database():
         "images",
         "tags",
         "audio_tags",
+    ]
+
+    # Delete all entries from each table
+    for table in tables:
+        cur.execute(f"DELETE FROM {table}")
+
+    conn.commit()
+    conn.close()
+    return {"status": "database cleaned successfully"}
+
+
+@router.post("/reset-user-interactions")
+def reset_database():
+    conn = get_db()
+    cur = conn.cursor()
+
+    # List of tables to clean
+    tables = [
+        "user_interactions",
     ]
 
     # Delete all entries from each table
