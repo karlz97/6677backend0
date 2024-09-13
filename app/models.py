@@ -3,13 +3,12 @@ from typing import List, Optional
 
 
 class AudioMetadata(BaseModel):
-    id: Optional[int]
     src_id: str
     description: str
     audio_src: str
     location: str
     images: List[str]
-    creator: str  # Changed from List[str] to str
+    creator: str
     tags: List[str]
 
 

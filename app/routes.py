@@ -192,13 +192,12 @@ def add_audio_meta(audio: AudioMetadata):
             audio.creator,
         ),
     )
-    audio_id = cur.lastrowid
 
     # Insert images
     for image_url in audio.images:
         cur.execute(
-            "INSERT INTO images (audio_id, image_url) VALUES (?, ?)",
-            (audio_id, image_url),
+            "INSERT INTO images (src_id, image_url) VALUES (?, ?)",
+            (audio.src_id, image_url),
         )
 
     # Insert tags
@@ -207,8 +206,8 @@ def add_audio_meta(audio: AudioMetadata):
         cur.execute("SELECT id FROM tags WHERE name = ?", (tag,))
         tag_id = cur.fetchone()[0]
         cur.execute(
-            "INSERT OR IGNORE INTO audio_tags (audio_id, tag_id) VALUES (?, ?)",
-            (audio_id, tag_id),
+            "INSERT OR IGNORE INTO audio_tags (src_id, tag_id) VALUES (?, ?)",
+            (audio.src_id, tag_id),
         )
 
     conn.commit()

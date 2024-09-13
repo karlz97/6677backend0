@@ -18,8 +18,7 @@ def init_db():
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS audio_metadata (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            src_id TEXT UNIQUE NOT NULL,
+            src_id TEXT PRIMARY KEY,
             description TEXT,
             audio_src TEXT,
             location TEXT,

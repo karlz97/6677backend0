@@ -71,7 +71,7 @@ def recommend_by_tags(
     query = f"""
         SELECT am.src_id, COUNT(DISTINCT t.id) as tag_count
         FROM audio_metadata am
-        JOIN audio_tags at ON am.id = at.audio_id
+        JOIN audio_tags at ON am.src_id = at.src_id
         JOIN tags t ON at.tag_id = t.id
         LEFT JOIN user_interactions ui ON am.src_id = ui.src_id AND ui.user_id = ?
         WHERE t.name IN ({placeholders})
@@ -82,7 +82,7 @@ def recommend_by_tags(
         query += " AND (ui.recommended IS NULL OR ui.recommended = 0)"
 
     query += """
-        GROUP BY am.id
+        GROUP BY am.src_id
         ORDER BY tag_count DESC, RANDOM() 
         LIMIT ?
     """
