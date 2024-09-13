@@ -213,3 +213,28 @@ def add_audio_meta(audio: AudioMetadata):
     conn.commit()
     conn.close()
     return {"status": "success"}
+
+
+@router.post("/clean-database")
+def clean_database():
+    conn = get_db()
+    cur = conn.cursor()
+
+    # List of tables to clean
+    tables = [
+        "user_interactions",
+        "bookmarks",
+        "comments",
+        "audio_metadata",
+        "images",
+        "tags",
+        "audio_tags",
+    ]
+
+    # Delete all entries from each table
+    for table in tables:
+        cur.execute(f"DELETE FROM {table}")
+
+    conn.commit()
+    conn.close()
+    return {"status": "database cleaned successfully"}
