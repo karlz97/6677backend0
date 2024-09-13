@@ -4,7 +4,7 @@ import sqlite3
 from app.database import get_db, init_db
 from app.models import AudioMetadata, Creator, Tag, UserInteraction
 
-DATA_INPUT_DIR = "data.input"
+DATA_INPUT_DIR = "data-input"
 ADDED_FILES_LOG = DATA_INPUT_DIR + "/added_files.log"
 
 

@@ -44,3 +44,9 @@ docker-compose.local.yml
 secrets/
 .DS_Store
 .DS_Store
+
+# Test assets
+test-assets/
+
+# Data input
+data-input/
