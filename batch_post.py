@@ -68,9 +68,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Process CSV files and upload audio metadata to the server.",
         epilog="Example usage:\n"
-        "  python seed_db_api.py data.input/book1.csv\n"
-        "  python seed_db_api.py data.input/\n"
-        "  python seed_db_api.py -u http://api.example.com data.input/book1.csv",
+        "  python batch_post.py.py data.input/book1.csv\n"
+        "  python batch_post.py.py data.input/\n"
+        "  python batch_post.py.py -u http://api.example.com data.input/book1.csv",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
