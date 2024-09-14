@@ -22,7 +22,8 @@ def init_db():
             description TEXT,
             audio_src TEXT,
             location TEXT,
-            creator TEXT
+            creator TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
         """
     )
@@ -112,6 +113,19 @@ def init_db():
             comment TEXT,
             PRIMARY KEY (user_id, src_id, comment),
             FOREIGN KEY (user_id, src_id) REFERENCES user_interactions (user_id, src_id)
+        )
+        """
+    )
+
+    # Users table
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            openid TEXT UNIQUE NOT NULL,
+            session_key TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            -- Add other necessary fields here
         )
         """
     )

@@ -3,6 +3,7 @@ import requests
 import os
 import argparse
 from typing import List, Set
+from datetime import datetime
 
 # Default API endpoint
 DEFAULT_API_URL = "http://localhost:8000"
@@ -39,6 +40,7 @@ def process_csv_file(file_path: str):
                 ],
                 "creator": row["Creator_id"],
                 "tags": [tag.strip() for tag in row["Tag"].split(",")],
+                "created_at": datetime.utcnow().isoformat(),  # Assuming you want to set the current time
             }
 
             response = requests.post(ADD_AUDIO_META_ENDPOINT, json=audio_meta)

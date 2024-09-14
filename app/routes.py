@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Query
+from datetime import datetime
+from fastapi import APIRouter, HTTPException, Query, Depends
 from app.models import AudioMetadata, UserInteraction
 from app.database import get_db
 from typing import List
@@ -9,8 +10,12 @@ from app.utils import (
     fetch_audio_meta,
     no_recommended_state_update,
 )
+from app.controllers.auth import router as auth_router
+from app.middlewares.auth import authMiddleware
+
 
 router = APIRouter()
+router.include_router(auth_router)
 
 
 @router.get("/recommend/{user_id}")
@@ -181,15 +186,16 @@ def add_audio_meta(audio: AudioMetadata):
     # Insert audio metadata
     cur.execute(
         """
-        INSERT OR REPLACE INTO audio_metadata (src_id, description, audio_src, location, creator)
-        VALUES (?, ?, ?, ?, ?)
-    """,
+        INSERT OR REPLACE INTO audio_metadata (src_id, description, audio_src, location, creator, created_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
         (
             audio.src_id,
             audio.description,
             audio.audio_src,
             audio.location,
             audio.creator,
+            datetime.utcnow(),  # Assuming you want to set the current time
         ),
     )
 
@@ -257,3 +263,8 @@ def reset_database():
     conn.commit()
     conn.close()
     return {"status": "database cleaned successfully"}
+
+
+@router.get("/protected-route")
+def protected_route(user: dict = Depends(authMiddleware)):
+    return {"message": "This is a protected route", "user": user}

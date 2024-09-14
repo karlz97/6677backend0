@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import datetime
 
 
 class AudioMetadata(BaseModel):
@@ -10,6 +11,7 @@ class AudioMetadata(BaseModel):
     images: List[str]
     creator: str
     tags: List[str]
+    created_at: datetime
 
 
 class Creator(BaseModel):
@@ -33,3 +35,11 @@ class UserInteraction(BaseModel):
     bookmarks: List[str]
     comments: List[str]
     recommended: bool
+
+
+class User(BaseModel):
+    id: int
+    openid: str
+    session_key: str
+    created_at: datetime
+    # Add other necessary fields here

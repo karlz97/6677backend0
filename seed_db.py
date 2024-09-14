@@ -3,6 +3,7 @@ import os
 import sqlite3
 from app.database import get_db, init_db
 from app.models import AudioMetadata, Creator, Tag, UserInteraction
+import datetime
 
 DATA_INPUT_DIR = "data-input"
 ADDED_FILES_LOG = DATA_INPUT_DIR + "/added_files.log"
@@ -39,13 +40,14 @@ def process_csv_file(file_path):
         for row in reader:
             # Insert audio metadata
             cur.execute(
-                "INSERT OR REPLACE INTO audio_metadata (src_id, description, audio_src, location, creator) VALUES (?, ?, ?, ?, ?)",
+                "INSERT OR REPLACE INTO audio_metadata (src_id, description, audio_src, location, creator, created_at) VALUES (?, ?, ?, ?, ?, ?)",
                 (
                     row["Source_id"],
                     row["Title"],
                     row["Audio_url"],
                     row["Location"],
                     row["Creator_id"],
+                    datetime.utcnow(),  # Assuming you want to set the current time
                 ),
             )
             src_id = row["Source_id"]
